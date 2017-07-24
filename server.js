@@ -29,8 +29,8 @@ I will respond to the following messages:
 // Setup different handlers for messages
 //*********************************************
 
-slapp.command('plus <(.*)>', (msg, text, username) => {
-  msg.say(username)
+ slapp.command('/plus', '(.*)', (msg, text, username) => {
+  msg.say(text)
 })
 
 // // response to the user typing "help"
@@ -110,12 +110,9 @@ slapp.command('plus <(.*)>', (msg, text, username) => {
 // })
 
 // Catch-all for any other responses not handled above
-slapp.message('.*', ['direct_mention', 'direct_message'], (msg) => {
-  // respond only 40% of the time
-  if (Math.random() < 0.4) {
-    msg.say([':wave:', ':pray:', ':raised_hands:'])
-  }
-})
+// slapp.message('.*', ['direct_mention', 'direct_message'], (msg) => {
+//   msg.say([':wave:', ':pray:', ':raised_hands:'])
+// })
 
 // attach Slapp to express server
 var server = slapp.attachToExpress(express())
