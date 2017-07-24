@@ -5,6 +5,9 @@ const Slapp = require('slapp')
 const ConvoStore = require('slapp-convo-beepboop')
 const Context = require('slapp-context-beepboop')
 
+const MongoClient = require('mongodb').MongoClient;
+
+
 // use `PORT` env var on Beep Boop - default to 3000 locally
 var port = process.env.PORT || 3000
 
@@ -29,9 +32,55 @@ I will respond to the following messages:
 // Setup different handlers for messages
 //*********************************************
 
- slapp.command('/plus', '(.*)', (msg, text, username) => {
-  msg.say(text)
+MongoClient.connect("mongodb://ownzandy:ownzandy@ds121483.mlab.com:21483/slim-elephant", function(err, db) {
+  if(!err) {
+    console.log("We are connected");
+  }
+
+  slapp.message('^(\\++|\\--) <(.*)>$', (msg, text, action, username) => {
+    const query = { name: username }
+    db.collection("elephants").find(query).toArray(function(err, result) {
+      if (err) {
+        console.log(err)
+      }
+      if (result) {
+        if(result.length == 0 && action == "++") {
+           db.collection('elephants').insertOne( { name: username, count: 1 }, function(err) {
+            leaderboardFunction(db, msg)
+           })
+        }
+        if(result.length == 1 && action == "++") {
+          db.collection('elephants').update({ name: username}, {name : username, count: result[0].count + 1 }, function(err) {
+            leaderboardFunction(db, msg)
+          })
+        }
+        if(result.length == 1 && action == "--") {
+          db.collection('elephants').update({ name: username}, {name : username, count: result[0].count - 1 }, function(err) {
+            leaderboardFunction(db, msg)
+          })
+        }
+      }
+    })
+  })
+
+  slapp.message('leaderboard', (msg, text) => {
+    leaderboardFunction(db, msg)
+  })
 })
+
+var leaderboardFunction = function(db, msg) {
+    var leaderboard = ""
+    var cursor = db.collection('elephants').find().sort( {count: 1})
+    cursor.each(function(err, item) {
+    // If the item is null then the cursor is exhausted/empty and closed
+      if(item == null) {
+          msg.say(leaderboard)
+          return
+      }
+      const newLine = "<" + item.name + ">: " + item.count + "\n"
+      leaderboard += newLine
+    })
+}
 
 // // response to the user typing "help"
 // slapp.message('help', ['mention', 'direct_message'], (msg) => {
