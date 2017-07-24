@@ -29,8 +29,8 @@ I will respond to the following messages:
 // Setup different handlers for messages
 //*********************************************
 
-slapp.message('^(plus).*', ['direct_mention', 'direct_message'], (msg, text, greeting) => {
-  msg.say(`${greeting}, ${text}, ${msg}, how are you?`)
+slapp.command('/plus', '(.*)', (msg, text, username) => {
+  msg.say(username)
 })
 
 // // response to the user typing "help"
