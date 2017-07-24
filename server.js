@@ -37,7 +37,7 @@ MongoClient.connect("mongodb://ownzandy:ownzandy@ds121483.mlab.com:21483/slim-el
     console.log("We are connected");
   }
 
-  slapp.message('^(\\++|\\--) <(.*)>$', (msg, text, action, username) => {
+  slapp.message('^(\\++|\\--) <(.*)>$',  ['direct_mention', 'direct_message'], (msg, text, action, username) => {
     const query = { name: username }
     db.collection("elephants").find(query).toArray(function(err, result) {
       if (err) {
@@ -63,7 +63,7 @@ MongoClient.connect("mongodb://ownzandy:ownzandy@ds121483.mlab.com:21483/slim-el
     })
   })
 
-  slapp.message('leaderboard', (msg, text) => {
+  slapp.message('leaderboard',  ['direct_mention', 'direct_message'], (msg, text) => {
     leaderboardFunction(db, msg)
   })
 })
