@@ -29,7 +29,7 @@ I will respond to the following messages:
 // Setup different handlers for messages
 //*********************************************
 
-slapp.command('/plus', '(.*)', (msg, text, username) => {
+slapp.command('plus <(.*)>', (msg, text, username) => {
   msg.say(username)
 })
 
